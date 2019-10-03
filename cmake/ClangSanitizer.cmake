@@ -1,0 +1,28 @@
+if( NOT ${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
+	return()
+endif()
+
+option(CLANG_ASAN_UBSAN "Enable Clang address,leak & undefined behavior sanitizer." OFF)
+option(CLANG_MSAN "Enable Clang memory sanitizer." OFF)
+option(CLANG_TSAN "Enable Clang thread sanitizer." OFF)
+mark_as_advanced(CLANG_ASAN_UBSAN CLANG_MSAN CLANG_TSAN)
+
+if((CLANG_ASAN_UBSAN AND CLANG_MSAN)
+        OR (CLANG_ASAN_UBSAN AND CLANG_TSAN)
+        OR (CLANG_MSAN AND CLANG_TSAN))
+        message(FATAL_ERROR "Sanitizers cannot be enabled simultaneously.")
+endif()
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        if(CLANG_ASAN_UBSAN)
+                message(STATUS "Enabling Clang address, leak and undefined behavior sanitizer.")
+                set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DEXITFREE -fno-sanitize-recover=all -fno-omit-frame-pointer -fno-optimize-sibling-calls -fsanitize=address -fsanitize=undefined -fsanitize=leak")
+        elseif(CLANG_MSAN)
+                message(STATUS "Enabling Clang memory sanitizer")
+                set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DEXITFREE -fsanitize=memory -fsanitize-memory-track-origins -fno-omit-frame-pointer -fno-optimize-sibling-calls ")
+        elseif(CLANG_TSAN)
+                message(STATUS "Enabling Clang thread sanitizer")
+                set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DEXITFREE -fsanitize=thread -fPIE -fsanitize=thread ")
+        endif()
+endif()
+
