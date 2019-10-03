@@ -2,7 +2,7 @@ if( NOT ${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
 	return()
 endif()
 
-option(CLANG_ASAN_UBSAN "Enable Clang address,leak & undefined behavior sanitizer." OFF)
+option(CLANG_ASAN "Enable Clang address & leak sanitizer." OFF)
 option(CLANG_MSAN "Enable Clang memory sanitizer." OFF)
 option(CLANG_TSAN "Enable Clang thread sanitizer." OFF)
 mark_as_advanced(CLANG_ASAN_UBSAN CLANG_MSAN CLANG_TSAN)
