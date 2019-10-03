@@ -1,44 +1,29 @@
-#include <iostream>
-#include <string>
+#include <cstdio>
+#include <cstdlib>
+int main(int argc, char **argv) {
+    printf("hello\n");
 
-#if defined(__FreeBSD__)
-#include <sys/sysctl.h>
-#elif defined(_WIN32)
-#include <Windows.h>
-#else
-#include <unistd.h>
-#endif
+    // Use after free
+    int *array = new int[100];
+    delete [] array;
+    return array[argc];  // BOOM
 
-using std::string;
+    // Stack buffer overflow
+    //int stack_array[100];
+    //stack_array[1] = 0;
+    //return stack_array[argc + 100];  // BOOM
 
-#define MAX_PATH 1024
-static string getexename()
-{
-	char result[MAX_PATH];
-#if defined(_WIN32)
-	const string DELIM("\\");
-#else
-	const string DELIM("/");
-#endif
+    // uninitialized memory
+    //int* a = new int[10];
+    //a[5] = 0;
+    //if (a[argc])
+    //    printf("xx\n");
+    //return 0;
 
-#if defined(_WIN32)
-	GetModuleFileName( NULL, result, MAX_PATH );
-	const string s(result);
-#elif defined(__linux__)
-	const ssize_t count = readlink( "/proc/self/exe", result, MAX_PATH );
-	const string s(result, result+count);
-#elif defined(__FreeBSD__)
-	const int mib[4] = { CTL_KERN , KERN_PROC , KERN_PROC_PATHNAME , -1 };
-	size_t cb = sizeof(result);
-	sysctl(mib, 4, result, &cb, NULL, 0);
-	const string s(result);
-#endif
-	const size_t pos = s.find_last_of(DELIM);
-	return s.substr( pos+1 );
-}
-
-int main()
-{
-	std::cout << "I am " << getexename() << ".\n";
-	return 0;
+    // memory leak
+    //void *p;
+    //p = malloc(7);
+    //p = 0; // The memory is leaked here.
+    //return 0;
+    //}
 }
