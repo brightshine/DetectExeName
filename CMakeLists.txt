@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.7)
-
-
 project(demo CXX)
+find_package (Threads)
+
 add_executable ( ${PROJECT_NAME} main.cc )
+target_link_libraries ( ${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT})
 
 ###############  BUILD TYPE ################################################
 if(NOT CMAKE_BUILD_TYPE)
